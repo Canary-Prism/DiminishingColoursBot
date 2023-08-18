@@ -142,7 +142,7 @@ public class Main {
 
         loadSaves();
 
-        if (token == null) {
+        if (token == null || token.isEmpty()) {
             tokenMenu(null);
         } else
             start();
