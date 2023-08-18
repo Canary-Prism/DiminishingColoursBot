@@ -1,6 +1,5 @@
 package diminishingcoloursbot;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,7 +14,6 @@ import org.json.JSONWriter;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Taskbar;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileWriter;
@@ -168,8 +166,6 @@ public class Main {
     private String token;
 
     private String buffer;
-
-    private BotRoleColorHistory history;
 
     private void loadSaves() {
         try {
