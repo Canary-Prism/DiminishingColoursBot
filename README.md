@@ -1,15 +1,9 @@
 # DiminishingColoursBot
 
-Webtoon notifications via Discord! (So they actually work!)  
-so this is a bot i made because i was fed up with Webtoon subscription email **never working**. so this instead requests the rss of subscribed webtoons and sends messages to channels as notifications instead  
-**it checks every 5 minutes**  
-most of the interacting with the bot will not be done using the GUI that this launches with, instead, mostly using Slash Commands. for a bot you're hosting on your own, the bot is structured in a way that provides customisability per channel, and can handle any reasonable number of channels with any reasonable number of Webtoons, suggesting it could also just be hosted by me, but oh well.
-
-the first time you launch the .jar you will be prompted for your bot's token, then it saves it for future use.
-
-`/webtoon` and its subcommands deal with the subscribing and unsubscribing of webtoons  
-`/notify` deals with what changes in the subscribed webtoons a channel will care about  
-`/message` and its subcommands deal with the messages that get sent when change a channel cares about happens
+this is a bot that gave me headaches a lot  
+the bot makes it so you can specify exactly what colour you want, but if you're approaching the role limit it'll start averaging colours together  
+honestly though the "allocating" part of the bot i already forgor how i made it.  
+#### today feels like a dream
 
 
 ### [Download](https://github.com/Canary-Prism/DiminishingColoursBot/releases/)
