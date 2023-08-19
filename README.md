@@ -27,6 +27,9 @@ This program uses Java, you should download and install Java Development Kit (JD
 
 ## Historical Changelog
 
+### 1.0.1
+* forgor to make /ping ephemeral
+
 ### 1.0
 * fixed the stupid bug where the bot would crash if you tried to use it at all :p
 * first actual release :D

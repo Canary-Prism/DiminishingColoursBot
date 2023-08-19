@@ -46,7 +46,7 @@ public class Bot {
             time = System.nanoTime();
             var interaction = event.getSlashCommandInteraction();
             if (interaction.getCommandName().equals("ping")) { // ping command
-                interaction.createImmediateResponder().setContent("Pong!").respond().join();
+                interaction.createImmediateResponder().setContent("Pong!").setFlags(MessageFlag.EPHEMERAL).respond().join();
                 System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
                 return;
             } else if (interaction.getCommandName().equals("rolecolor")) { //rolecolor command

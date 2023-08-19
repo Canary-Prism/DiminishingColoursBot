@@ -30,10 +30,9 @@ public class Main {
     private String working_directory;
 
     private final static String[] CHANGELOG = {
-        "fixed the stupid bug where the bot would crash if you tried to use it at all :p",
-        "first actual release :D"
+        "forgor to make /ping ephemeral"
     };
-    private final static String VERSION = "1.0";
+    private final static String VERSION = "1.0.1";
     
     private JFrame frame = new JFrame("DiminishingColoursBot");
     private final static int ROOM = 20;
