@@ -21,6 +21,9 @@ public class Bot {
     private DiscordApi api;
     private volatile long time;
 
+    //3 sec cooldown
+    private final long MANUAL_UPDATE_COOLDOWN = 3000;
+
     private Main main;
     
     public Bot(String token, Main main) {
@@ -40,6 +43,7 @@ public class Bot {
         }
     }
 
+    private volatile long last_manual_update = 0L;
 
     public void start() {
         api.addSlashCommandCreateListener((event) -> {
@@ -164,6 +168,21 @@ public class Bot {
                     return;
                 }
 
+            } else if (interaction.getCommandName().equals("update")) { //update command
+                if (!interaction.getServer().get().getPermissions(interaction.getUser()).getState(PermissionType.MANAGE_ROLES).equals(PermissionState.ALLOWED) && System.currentTimeMillis() - last_manual_update < MANUAL_UPDATE_COOLDOWN) {
+                    interaction.createImmediateResponder().setContent("Error: You don't have the permission to manually update the bot").setFlags(MessageFlag.EPHEMERAL).respond().join();
+                    System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
+                    return;
+                }
+                var responder = interaction.respondLater(true).join();
+                responder.setContent("Allocating Roles...").setFlags(MessageFlag.EPHEMERAL).update().join();
+                System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
+                time = System.nanoTime();
+                allocator.update(interaction.getServer().get());
+                responder.setContent("Done!").update().join();
+                System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (role allocation)");
+                last_manual_update = System.currentTimeMillis();
+                return;
             }
         });
 
@@ -193,6 +212,7 @@ public class Bot {
         removeAllSlashCommands();
         createPingCommand();
         createColorCommand();
+        createUpdateCommand();
     }
 
     protected void removeAllSlashCommands() {
@@ -234,4 +254,7 @@ public class Bot {
         ).setEnabledInDms(false).createGlobal(api).join();
     }
 
+    protected SlashCommand createUpdateCommand() {
+        return SlashCommand.with("update", "Updates and reallocates the colour roles").setEnabledInDms(false).createGlobal(api).join();
+    }
 }

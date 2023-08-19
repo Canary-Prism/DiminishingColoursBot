@@ -43,6 +43,8 @@ public class BotRoleAllocator {
         private ArrayList<ExtColor> target_colors = new ArrayList<>();
         private ArrayList<ExtColor> current_colors = new ArrayList<>();
 
+        private Role positioner;
+
         private int space;
         private ServerRoleAllocator(Server server) {
             this.server = server;
@@ -58,6 +60,20 @@ public class BotRoleAllocator {
                     color_roles.add(role);
                 }
             });
+
+            positioner = null;
+            for (var role : roles) {
+                if (role.getName().startsWith("‌​‌"))
+                    positioner = role;
+            }
+            if (positioner == null && space < 1) {
+                System.out.println("Not enough space to do anything");
+                return this;
+            }
+            if (positioner == null) {
+                positioner = server.createRoleBuilder().setName("‌​‌DiminishingColoursBot Role Position").create().join();
+            }
+
             users.clear();
             server.getMembers().forEach((e) -> {
                 if (history.getCurrent(server.getId(), e.getId()) != null) {
@@ -176,6 +192,26 @@ public class BotRoleAllocator {
                     current_colors.add(target_colors.get(i));
                 }
             }
+
+            roles = server.getRoles();
+            var mod_roles = new ArrayList<Role>();
+            mod_roles.addAll(roles);
+            var temp_roles = new ArrayList<Role>();
+            for (int i = 0; i < mod_roles.size();) {
+                if (mod_roles.get(i).getName().startsWith("​")) {
+                    temp_roles.add(mod_roles.get(i));
+                    mod_roles.remove(i);
+                } else {
+                    i++;
+                }
+            }
+            var positionposition = mod_roles.indexOf(positioner);
+            for (int i = temp_roles.size() - 1; i >= 0; i--) {
+                mod_roles.add(positionposition, temp_roles.get(i));
+            }
+
+            server.reorderRoles(mod_roles).join();
+
             for (var user : users) {
                 if (!user.getDesignatedColor().equals(user.getCurrentColor())) {
                     for (var role : user.getUser().getRoles(server)) {
