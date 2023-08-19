@@ -25,6 +25,16 @@ public class BotRoleColorHistory {
         }
     }
 
+    public synchronized void delete(long server_id) {
+        history.removeIf((server) -> server.getServerId() == server_id);
+    }
+    public synchronized void delete(long server_id, long user_id) {
+        history.forEach((server) -> {
+            if (server.getServerId() == server_id)
+                server.getAllUsers().removeIf((user) -> user.getUserId() == user_id);
+        });
+    }
+
     public synchronized Color rewindLatest(long server_id, long user_id) {
         response = null;
         history.forEach((server) -> {

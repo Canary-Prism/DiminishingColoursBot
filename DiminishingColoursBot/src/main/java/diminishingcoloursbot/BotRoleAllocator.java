@@ -66,12 +66,25 @@ public class BotRoleAllocator {
                         if (role.getName().startsWith("​")) {
                             current_color = role.getColor().get();
                         }
-                        if (current_color != null)
-                            current_color = Color.BLACK;
                     }
+                    if (current_color == null)
+                        current_color = Color.BLACK;
                     users.add(new UserWithColor(e, history.getCurrent(server.getId(), e.getId()), current_color));
                 }
             });
+
+            for (int i = 0; i < users.size();) {
+                if (users.get(i).getTargetColor().equals(Color.BLACK)) {
+                    for (var e : color_roles) {
+                        if (e.getName().startsWith("​")) {
+                            e.removeUser(users.get(i).getUser()).join();
+                        }
+                    }
+                    users.remove(i);
+                } else {
+                    i++;
+                }
+            }
 
             target_colors.clear();
             users.forEach((e) -> {
@@ -83,6 +96,15 @@ public class BotRoleAllocator {
                     target_colors.get(target_colors.indexOf(color)).targets.add(e);
                 }
             });
+
+            for (int i = 0; i < color_roles.size();) {
+                if (!color_roles.get(i).getColor().isPresent()) {
+                    color_roles.get(i).delete();
+                    color_roles.remove(i);
+                } else {
+                    i++;
+                }
+            }
 
             current_colors.clear();
             color_roles.forEach((e) -> {
@@ -142,18 +164,16 @@ public class BotRoleAllocator {
                 });
             }
             
-            for (int i = 0; i < color_roles.size();) {
+            for (int i = 0; i < color_roles.size(); i++) {
                 if (!target_colors.contains(current_colors.get(i))) {
                     color_roles.get(i).delete();
-                    color_roles.remove(i);
-                } else {
-                    i++;
                 }
             }
             for (int i = 0; i < target_colors.size(); i++) {
                 if (!current_colors.contains(target_colors.get(i))) {
                     var role = server.createRoleBuilder().setName("​").setColor(target_colors.get(i)).create().join();
                     color_roles.add(role);
+                    current_colors.add(target_colors.get(i));
                 }
             }
             for (var user : users) {
@@ -163,10 +183,10 @@ public class BotRoleAllocator {
                             role.removeUser(user.getUser()).join();
                         }
                     }
-                    color_roles.get(target_colors.indexOf(user.getDesignatedColor())).addUser(user.getUser()).join();
+                    color_roles.get(current_colors.indexOf(user.getDesignatedColor())).addUser(user.getUser()).join();
                 }
             }
-
+            
             return this;
         }
 

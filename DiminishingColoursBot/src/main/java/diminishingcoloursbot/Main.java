@@ -30,9 +30,10 @@ public class Main {
     private String working_directory;
 
     private final static String[] CHANGELOG = {
-        "Made a thing, i haven't even tested it yet"
+        "fixed the stupid bug where the bot would crash if you tried to use it at all :p",
+        "first actual release :D"
     };
-    private final static String VERSION = "0.1";
+    private final static String VERSION = "1.0";
     
     private JFrame frame = new JFrame("DiminishingColoursBot");
     private final static int ROOM = 20;
@@ -159,6 +160,7 @@ public class Main {
         bot.start();
         
         mainMenu(null);
+        System.out.println("Bot Started");
     }
 
     private File folder, bot_file, color_file;
@@ -387,5 +389,6 @@ public class Main {
         frame.getContentPane().add(dud);
         
         frame.setSize(190 + Main.ROOM * 2, 100 + Main.ROOM * 2);
+        frame.repaint();
     }
 }

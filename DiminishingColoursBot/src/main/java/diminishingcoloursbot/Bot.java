@@ -33,6 +33,13 @@ public class Bot {
         api = new DiscordApiBuilder().setToken(token).addIntents(Intent.GUILD_MEMBERS).login().join();
     }
 
+    public void createPointlessRoles(int amount, long server_id) {
+        var server = api.getServerById(server_id).get();
+        for (int i = 0; i < amount; i++) {
+            server.createRoleBuilder().setName("test" + i).create().join();
+        }
+    }
+
 
     public void start() {
         api.addSlashCommandCreateListener((event) -> {
@@ -78,7 +85,7 @@ public class Bot {
                     };
                     boolean imposed = (target != interaction.getUser());
 
-                    if (imposed && !interaction.getServer().get().getPermissions(interaction.getUser()).getState(PermissionType.MANAGE_NICKNAMES).equals(PermissionState.ALLOWED)) {
+                    if (imposed && !interaction.getServer().get().getPermissions(interaction.getUser()).getState(PermissionType.MANAGE_ROLES).equals(PermissionState.ALLOWED)) {
                         interaction.createImmediateResponder().setContent("Error: You don't have the permission to change other users' role colours").setFlags(MessageFlag.EPHEMERAL).respond().join();
                         System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
                         return;
@@ -116,37 +123,69 @@ public class Bot {
 
 
                     history.add(interaction.getServer().get().getId(), target.getId(), temp_color, imposed);
-                    interaction.createImmediateResponder().setContent("Done").setFlags(MessageFlag.EPHEMERAL).respond().join();
+                    var responder = interaction.respondLater(true).join();
+                    responder.setContent("Allocating Roles...").setFlags(MessageFlag.EPHEMERAL).update().join();
                     main.save(history);
                     System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
                     time = System.nanoTime();
                     allocator.update(interaction.getServer().get());
+                    responder.setContent("Done!").update().join();
                     System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (role allocation)");
                     return;
                 } else if (interaction.getOptionByIndex(0).get().getName().equals("restore")) {
                     Color old_color = history.getCurrent(interaction.getServer().get().getId(), interaction.getUser().getId());
                     Color new_color = history.rewindLatest(interaction.getServer().get().getId(), interaction.getUser().getId());
+
+                    String response;
+
+                    var responder = interaction.respondLater(true).join();
+                        
                     if (new_color != null) {
-                        interaction.createImmediateResponder().setContent("Changed rolecolor from " 
+                        response = "Changed rolecolor from " 
                         + String.format("#%02x%02x%02x", old_color.getRed(), old_color.getGreen(), old_color.getBlue())
                         + " back to "
-                        + String.format("#%02x%02x%02x", new_color.getRed(), new_color.getGreen(), new_color.getBlue())
-                        ).setFlags(MessageFlag.EPHEMERAL).respond().join();
+                        + String.format("#%02x%02x%02x", new_color.getRed(), new_color.getGreen(), new_color.getBlue());
 
-
+                        responder.setContent(response).setFlags(MessageFlag.EPHEMERAL).update().join();
                     } else {
-                        interaction.createImmediateResponder().setContent("No older colour to revert to").setFlags(MessageFlag.EPHEMERAL).respond().join();
+                        responder.setContent("No older colour to revert to").setFlags(MessageFlag.EPHEMERAL).update().join();
                         return;
                     }
+
+                    
+                    responder.setContent(response + "\nAllocating Roles...").setFlags(MessageFlag.EPHEMERAL).update().join();
                     main.save(history);
                     System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
                     time = System.nanoTime();
                     allocator.update(interaction.getServer().get());
+                    responder.setContent(response + "\nDone!").update().join();
                     System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (role allocation)");
+
                     return;
                 }
 
             }
+        });
+
+
+        api.addRoleCreateListener((e) -> {
+            if (!e.getRole().getName().startsWith("​")) {
+                allocator.update(e.getServer());
+            }
+        });
+
+        api.addServerMemberLeaveListener((e) -> {
+            if (e.getUser().isYourself()) {
+                return;
+            }
+            history.delete(e.getServer().getId(), e.getUser().getId());
+            allocator.update(e.getServer());
+            main.save(history);
+        });
+
+        api.addServerLeaveListener((e) -> {
+            history.delete(e.getServer().getId());
+            main.save(history);
         });
     }
 
