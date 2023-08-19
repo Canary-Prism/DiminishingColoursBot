@@ -27,6 +27,10 @@ This program uses Java, you should download and install Java Development Kit (JD
 
 ## Historical Changelog
 
+### 1.1
+* added a role anchor which will dictate where the bot puts all its colour roles
+* added /update to manually update and reallocate all colour roles
+
 ### 1.0.1
 * forgor to make /ping ephemeral
 

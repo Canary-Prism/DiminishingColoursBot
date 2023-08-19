@@ -30,9 +30,10 @@ public class Main {
     private String working_directory;
 
     private final static String[] CHANGELOG = {
-        "forgor to make /ping ephemeral"
+        "added a role anchor which will dictate where the bot puts all its colour roles",
+        "added /update to manually update and reallocate all colour roles",
     };
-    private final static String VERSION = "1.0.1";
+    private final static String VERSION = "1.1";
     
     private JFrame frame = new JFrame("DiminishingColoursBot");
     private final static int ROOM = 20;
