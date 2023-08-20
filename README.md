@@ -27,6 +27,10 @@ This program uses Java, you should download and install Java Development Kit (JD
 
 ## Historical Changelog
 
+### 1.2
+* the bot now denies setting a rolecolor to the same color as their current target rolecolor
+* colourlessness is now handled better
+
 ### 1.1
 * added a role anchor which will dictate where the bot puts all its colour roles
 * added /update to manually update and reallocate all colour roles
