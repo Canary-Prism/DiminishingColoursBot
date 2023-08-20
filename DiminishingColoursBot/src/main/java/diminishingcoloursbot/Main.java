@@ -30,10 +30,10 @@ public class Main {
     private String working_directory;
 
     private final static String[] CHANGELOG = {
-        "added a role anchor which will dictate where the bot puts all its colour roles",
-        "added /update to manually update and reallocate all colour roles",
+        "the bot now denies setting a rolecolor to the same color as their current target rolecolor",
+        "colourlessness is now handled better"
     };
-    private final static String VERSION = "1.1";
+    private final static String VERSION = "1.2";
     
     private JFrame frame = new JFrame("DiminishingColoursBot");
     private final static int ROOM = 20;
