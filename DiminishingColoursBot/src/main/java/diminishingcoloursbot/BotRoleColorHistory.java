@@ -11,6 +11,7 @@ public class BotRoleColorHistory {
 
     private boolean success = false;
     private Color response;
+    private boolean isCurrentImposed;
 
     public synchronized void add(long server_id, long user_id, Color color, boolean imposed) {
         success = false;
@@ -54,6 +55,18 @@ public class BotRoleColorHistory {
                 });
         });
         return response;
+    }
+
+    public synchronized boolean isCurrentImposed(long server_id, long user_id) {
+        isCurrentImposed = true;
+        history.forEach((server) -> {
+            if (server.getServerId() == server_id)
+                server.getAllUsers().forEach((user) -> {
+                    if (user.getUserId() == user_id)
+                        isCurrentImposed = user.getImposeds()[0];
+                });
+        });
+        return isCurrentImposed;
     }
 
     public synchronized void add(ServerRoleColorHistory serverhistory) {
@@ -191,6 +204,11 @@ public class BotRoleColorHistory {
             }
 
             protected synchronized UserRoleColorHistory add(Color color, boolean imposed) {
+
+                if (color.equals(Color.BLACK))
+                    color = null;
+                
+
                 int temp = -1;
                 if (colors[1] == null) 
                     temp = 1;
@@ -216,6 +234,10 @@ public class BotRoleColorHistory {
                     case 0:
                         colors[0] = color;
                         imposeds[0] = imposed;
+                }
+
+                if (color == null) {
+                    imposeds[0] = true;
                 }
 
                 return this;

@@ -124,6 +124,20 @@ public class Bot {
                         interaction.createImmediateResponder().setContent("Error: RGB color values have to be between 0 and 255 (inclusive)").setFlags(MessageFlag.EPHEMERAL).respond().join();
                         return;
                     }
+                    if (temp_color.equals(history.getCurrent(interaction.getServer().get().getId(), target.getId())) || (history.getCurrent(interaction.getServer().get().getId(), target.getId()) == null && temp_color.equals(Color.BLACK))) {
+                        if (!imposed) {
+                            interaction.createImmediateResponder().setContent("Error: This is already your current role colour").setFlags(MessageFlag.EPHEMERAL).respond().join();
+                            if (history.isCurrentImposed(interaction.getServer().get().getId(), target.getId())) {
+                                history.rewindLatest(interaction.getServer().get().getId(), target.getId());
+                                history.add(interaction.getServer().get().getId(), target.getId(), temp_color, imposed);
+                                main.save(history);
+                            }
+                            return;
+                        } else {
+                            interaction.createImmediateResponder().setContent("Error: This is already the current role colour of " + target.getDiscriminatedName()).setFlags(MessageFlag.EPHEMERAL).respond().join();
+                            return;
+                        }
+                    }
 
 
                     history.add(interaction.getServer().get().getId(), target.getId(), temp_color, imposed);
