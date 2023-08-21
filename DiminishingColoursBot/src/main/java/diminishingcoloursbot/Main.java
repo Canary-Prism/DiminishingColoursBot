@@ -62,6 +62,8 @@ public class Main {
         working_directory += "/DiminishedColoursBot";
         //we are now free to set the working_directory to the subdirectory that is our 
         //folder.
+        
+        //i'll keep this in case i add icons later
         /* 
         frame.setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("icon/WebToonLink.png")).getImage());
 
@@ -138,11 +140,16 @@ public class Main {
         frame.setVisible(true);
     }
 
+    /**
+     * Loads the bot
+     * shows a loading screen and attempts to read the save files
+     */
     private void load() {
         loadingMenu(null);
 
         loadSaves();
 
+        //if a token is not saved, ask for one
         if (token == null) {
             tokenMenu(null);
         } else
@@ -152,6 +159,7 @@ public class Main {
     private void start() {
         loadingMenu(null);
 
+        //if save data is present, pass it along to the bot
         if (savehistory != null)
             bot = new Bot(token, this, savehistory);
         else
@@ -172,7 +180,7 @@ public class Main {
     private void loadSaves() {
         try {
             if (!folder.exists())
-                folder.mkdirs();
+                folder.mkdirs(); //create the folder if it doesn't exist
             else {
                 if (bot_file.exists()) {
                     try {

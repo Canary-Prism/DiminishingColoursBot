@@ -61,19 +61,24 @@ public class BotRoleAllocator {
                 }
             });
 
+            //get the role that will be used to position the color roles
             positioner = null;
             for (var role : roles) {
                 if (role.getName().startsWith("‌​‌"))
                     positioner = role;
             }
+
+            //if there is no positioner and there is no space, then there is nothing we can do
             if (positioner == null && space < 1) {
                 System.out.println("Not enough space to do anything");
                 return this;
             }
-            if (positioner == null) {
+            //if there is space but no positioner, then create one
+            else if (positioner == null) {
                 positioner = server.createRoleBuilder().setName("‌​‌DiminishingColoursBot Role Position").create().join();
             }
 
+            //get the users that have a target colour and are in the server
             users.clear();
             server.getMembers().forEach((e) -> {
                 if (history.getCurrent(server.getId(), e.getId()) != null) {
@@ -89,6 +94,7 @@ public class BotRoleAllocator {
                 }
             });
 
+            //if the user's target colour is black (colourless), simply remove their colour role and remove them from the list
             for (int i = 0; i < users.size();) {
                 if (users.get(i).getTargetColor().equals(Color.BLACK)) {
                     for (var e : color_roles) {
@@ -102,6 +108,7 @@ public class BotRoleAllocator {
                 }
             }
 
+            //gets list of all the target colours
             target_colors.clear();
             users.forEach((e) -> {
                 var color = new ExtColor(e.getTargetColor().getRed(), e.getTargetColor().getGreen(), e.getTargetColor().getBlue());
@@ -113,6 +120,7 @@ public class BotRoleAllocator {
                 }
             });
 
+            //if there is a colourless role, remove it (shouldn't be possible, but just in case)
             for (int i = 0; i < color_roles.size();) {
                 if (!color_roles.get(i).getColor().isPresent()) {
                     color_roles.get(i).delete();
@@ -122,6 +130,7 @@ public class BotRoleAllocator {
                 }
             }
 
+            //gets list of all the current colours from the list of colour roles
             current_colors.clear();
             color_roles.forEach((e) -> {
                 var color = new ExtColor(e.getColor().get().getRed(), e.getColor().get().getGreen(), e.getColor().get().getBlue());
@@ -129,22 +138,29 @@ public class BotRoleAllocator {
                     current_colors.add(color);
             });
 
+            //if there is no space, start averaging out colours
             while (target_colors.size() > space + color_roles.size()) {
                 ArrayList<DifferenceHolder> differences = new ArrayList<>();
+
+                //compares all the different colours
                 for (int i = 0; i < target_colors.size() - 1; i++) {
                     for (int k = i + 1; k < target_colors.size(); k++) {
                         int difference = target_colors.get(i).compare(target_colors.get(k));
                         differences.add(new DifferenceHolder(difference, i, k));
                     }
                 }
+                //finds the pair with the smallest difference
                 DifferenceHolder smallest = differences.get(0);
                 for (var difference : differences) {
                     if (difference.difference < smallest.difference)
                         smallest = difference;
                 }
+
+                //mixes the colours together
                 var first = target_colors.get(smallest.a);
                 var second = target_colors.get(smallest.b);
                 ArrayList<ExtColor> mixes = new ArrayList<>();
+                //if they're alerady mixed, add all the colours they're mixed with
                 if (first.mixed)
                     mixes.addAll(first.mix_sources);
                 else
@@ -154,6 +170,7 @@ public class BotRoleAllocator {
                 else
                     mixes.add(second);
 
+                //adds all the mixing colours together
                 int r = 0, g = 0, b = 0;
                 for (var mix : mixes) {
                     r += mix.getRed() * mix.getRed();
@@ -161,8 +178,10 @@ public class BotRoleAllocator {
                     b += mix.getBlue() * mix.getBlue();
                 }
 
+                //divides by total colours mixed with
                 var new_color = new ExtColor((int) Math.sqrt(r / mixes.size()), (int) Math.sqrt(g / mixes.size()), (int) Math.sqrt(b / mixes.size()));
 
+                //sets the new colour to be mixed
                 new_color.mixed = true;
                 new_color.mix_sources.addAll(mixes);
                 for (var mix : mixes) {
@@ -174,17 +193,20 @@ public class BotRoleAllocator {
                 target_colors.add(new_color);
             }
 
+            //informs the users of their designated colour
             for (var color : target_colors) {
                 color.targets.forEach((e) -> {
                     e.setDesignatedColor(color);
                 });
             }
             
+            //if a colour role is unneeded, remove it
             for (int i = 0; i < color_roles.size(); i++) {
                 if (!target_colors.contains(current_colors.get(i))) {
                     color_roles.get(i).delete();
                 }
             }
+            //if a colour role is needed but doesn't exist, create it
             for (int i = 0; i < target_colors.size(); i++) {
                 if (!current_colors.contains(target_colors.get(i))) {
                     var role = server.createRoleBuilder().setName("​").setColor(target_colors.get(i)).create().join();
@@ -197,6 +219,7 @@ public class BotRoleAllocator {
             var mod_roles = new ArrayList<Role>();
             mod_roles.addAll(roles);
             var temp_roles = new ArrayList<Role>();
+            //extracts the colour roles
             for (int i = 0; i < mod_roles.size();) {
                 if (mod_roles.get(i).getName().startsWith("​")) {
                     temp_roles.add(mod_roles.get(i));
@@ -206,12 +229,15 @@ public class BotRoleAllocator {
                 }
             }
             var positionposition = mod_roles.indexOf(positioner);
+            //places the colour roles in the correct position (directly under the positioner role)
             for (int i = temp_roles.size() - 1; i >= 0; i--) {
                 mod_roles.add(positionposition, temp_roles.get(i));
             }
 
+            //apply the new order
             server.reorderRoles(mod_roles).join();
 
+            //apply the designated colours to the users
             for (var user : users) {
                 if (!user.getDesignatedColor().equals(user.getCurrentColor())) {
                     for (var role : user.getUser().getRoles(server)) {
@@ -260,6 +286,10 @@ public class BotRoleAllocator {
                 this.current_color = current_color;
             }
         }
+        /**
+         * this is an extension of the Color class that allows for more functionality.
+         * mostly just keeping track of which colours it was mixed from and which users have it as their designated colour
+         */
         private static class ExtColor extends Color {
 
             private ArrayList<UserWithColor> targets = new ArrayList<>();
@@ -286,6 +316,9 @@ public class BotRoleAllocator {
             }
         }
 
+        /**
+         * this simply holds two indeces and the difference between them
+         */
         private class DifferenceHolder {
             private int difference;
             private int a, b;

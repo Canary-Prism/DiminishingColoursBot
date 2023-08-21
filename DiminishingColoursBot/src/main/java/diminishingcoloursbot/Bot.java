@@ -46,6 +46,8 @@ public class Bot {
     private volatile long last_manual_update = 0L;
 
     public void start() {
+
+        //the main listener for dealing with all slash commands this thing has
         api.addSlashCommandCreateListener((event) -> {
             time = System.nanoTime();
             var interaction = event.getSlashCommandInteraction();
@@ -89,6 +91,7 @@ public class Bot {
                     };
                     boolean imposed = (target != interaction.getUser());
 
+                    //check if user has permission to change other users' role colours
                     if (imposed && !interaction.getServer().get().getPermissions(interaction.getUser()).getState(PermissionType.MANAGE_ROLES).equals(PermissionState.ALLOWED)) {
                         interaction.createImmediateResponder().setContent("Error: You don't have the permission to change other users' role colours").setFlags(MessageFlag.EPHEMERAL).respond().join();
                         System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
@@ -200,7 +203,7 @@ public class Bot {
             }
         });
 
-
+        //in below situations, since this will change the optimal roles to be allocated to users, we need to update the roles
         api.addRoleCreateListener((e) -> {
             if (!e.getRole().getName().startsWith("​")) {
                 allocator.update(e.getServer());

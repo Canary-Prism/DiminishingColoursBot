@@ -79,7 +79,7 @@ public class BotRoleColorHistory {
 
 
     /**
-     * <p>So this is supposed to track the history of the rolecolors that any user of a server has (this bot doesn't support multiple servers... yet)</p>
+     * <p>So this is supposed to track the history of the rolecolors that any user of a server has <s>(this bot doesn't support multiple servers... yet)</s> nvm it does now :D</p>
      * 
      * <p>the first color in the {@code Color[]} array should be the newest recorded one. </p>
      * 
@@ -139,7 +139,7 @@ public class BotRoleColorHistory {
         public synchronized void fromSave(long user_id, String[] colors, Object[] imposeds) {
             history.forEach((user) -> {
                 if (user_id == user.getUserId()) 
-                    throw new RuntimeException("Duplicate Users in Save File");
+                    throw new RuntimeException("Duplicate Users in Save File"); //this should never happen
             });
             Color[] actually_colors = Arrays.asList(colors).stream().map(this::mapFromStringToColor).toList().toArray(new Color[0]);
 
