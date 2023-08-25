@@ -27,6 +27,9 @@ This program uses Java, you should download and install Java Development Kit (JD
 
 ## Historical Changelog
 
+## 1.2.1
+* changed the perms requirement for changing others' rolecolors to allow either Manage Roles or Administrator
+
 ### 1.2
 * the bot now denies setting a rolecolor to the same color as their current target rolecolor
 * colourlessness is now handled better

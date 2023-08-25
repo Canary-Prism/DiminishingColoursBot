@@ -30,10 +30,9 @@ public class Main {
     private String working_directory;
 
     private final static String[] CHANGELOG = {
-        "the bot now denies setting a rolecolor to the same color as their current target rolecolor",
-        "colourlessness is now handled better"
+        "changed the perms requirement for changing others' rolecolors to allow either Manage Roles or Administrator",
     };
-    private final static String VERSION = "1.2";
+    private final static String VERSION = "1.2.1";
     
     private JFrame frame = new JFrame("DiminishingColoursBot");
     private final static int ROOM = 20;
