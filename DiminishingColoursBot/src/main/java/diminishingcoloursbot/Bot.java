@@ -92,7 +92,7 @@ public class Bot {
                     boolean imposed = (target != interaction.getUser());
 
                     //check if user has permission to change other users' role colours
-                    if (imposed && !interaction.getServer().get().getPermissions(interaction.getUser()).getState(PermissionType.MANAGE_ROLES).equals(PermissionState.ALLOWED)) {
+                    if (imposed && !(interaction.getServer().get().getPermissions(interaction.getUser()).getState(PermissionType.MANAGE_ROLES).equals(PermissionState.ALLOWED) || interaction.getServer().get().getPermissions(interaction.getUser()).getState(PermissionType.ADMINISTRATOR).equals(PermissionState.ALLOWED))) {
                         interaction.createImmediateResponder().setContent("Error: You don't have the permission to change other users' role colours").setFlags(MessageFlag.EPHEMERAL).respond().join();
                         System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
                         return;
