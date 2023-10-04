@@ -5,6 +5,8 @@ the bot makes it so you can specify exactly what colour you want, but if you're 
 honestly though the "allocating" part of the bot i already forgor how i made it.  
 #### today feels like a dream
 
+this project uses colour and color interchangaeably and i am specifically doing that to mess with you
+
 
 ### [Download](https://github.com/Canary-Prism/DiminishingColoursBot/releases/)
 
