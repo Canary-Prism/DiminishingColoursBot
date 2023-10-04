@@ -3,6 +3,8 @@ package diminishingcoloursbot;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import org.javacord.api.entity.permission.Permissions;
+import org.javacord.api.entity.permission.PermissionsBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -49,6 +51,8 @@ public class BotRoleAllocator {
         private ServerRoleAllocator(Server server) {
             this.server = server;
         }
+
+        private static final Permissions no_permissions = new PermissionsBuilder().setAllDenied().build();
 
         private ServerRoleAllocator update() {
             var roles = server.getRoles();
@@ -209,7 +213,7 @@ public class BotRoleAllocator {
             //if a colour role is needed but doesn't exist, create it
             for (int i = 0; i < target_colors.size(); i++) {
                 if (!current_colors.contains(target_colors.get(i))) {
-                    var role = server.createRoleBuilder().setName("​").setColor(target_colors.get(i)).create().join();
+                    var role = server.createRoleBuilder().setName("​").setPermissions(no_permissions).setColor(target_colors.get(i)).create().join();
                     color_roles.add(role);
                     current_colors.add(target_colors.get(i));
                 }
