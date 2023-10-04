@@ -30,9 +30,9 @@ public class Main {
     private String working_directory;
 
     private final static String[] CHANGELOG = {
-        "changed the perms requirement for changing others' rolecolors to allow either Manage Roles or Administrator",
+        "colour roles will now be created without any perms to avoid messing with the server's existing perms",
     };
-    private final static String VERSION = "1.2.1";
+    private final static String VERSION = "1.2.2";
     
     private JFrame frame = new JFrame("DiminishingColoursBot");
     private final static int ROOM = 20;
