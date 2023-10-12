@@ -43,6 +43,13 @@ public class Bot {
         }
     }
 
+    public void listAllCommands() {
+        api.getGlobalSlashCommands().join().forEach(command -> 
+        command.getOptions().forEach((e) -> {
+            System.out.println(e.getName() + " " + e.getType() + " " + e.getDescription());
+        }));
+    }
+
     private volatile long last_manual_update = 0L;
 
     public void start() {
@@ -76,6 +83,9 @@ public class Bot {
                             return;
                         }
                     };
+                    interaction.createImmediateResponder().setContent("Error: You don't have a custom role colour").setFlags(MessageFlag.EPHEMERAL).respond().join();
+                    System.out.printf("%21s\n", System.nanoTime() - time + " nanoseconds (slash command)");
+                    return;
                 }
                 if (interaction.getOptionByIndex(0).get().getName().equals("set")) {
                     Color temp_color;

@@ -30,7 +30,7 @@ public class Main {
     private String working_directory;
 
     private final static String[] CHANGELOG = {
-        "colour roles will now be created without any perms to avoid messing with the server's existing perms",
+        "fixed the bot not responding to /rolecolor get if the user has no colour role",
     };
     private final static String VERSION = "1.2.2";
     
