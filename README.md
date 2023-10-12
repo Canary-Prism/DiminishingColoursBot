@@ -29,6 +29,9 @@ This program uses Java, you should download and install Java Development Kit (JD
 
 ## Historical Changelog
 
+## 1.2.3
+* fixed the bot not responding to /rolecolor get if the user has no colour role
+
 ## 1.2.2
 * colour roles will now be created without any perms to avoid messing with the server's existing perms
 
