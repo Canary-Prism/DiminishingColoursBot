@@ -148,8 +148,7 @@ public class Main {
 
         loadSaves();
 
-        //if a token is not saved, ask for one
-        if (token == null) {
+        if (token == null || token.isEmpty()) {
             tokenMenu(null);
         } else
             start();
