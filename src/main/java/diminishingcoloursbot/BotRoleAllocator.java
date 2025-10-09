@@ -1,13 +1,17 @@
 package diminishingcoloursbot;
 
-import java.awt.Color;
-import java.util.ArrayList;
-
+import dev.kdrag0n.colorkt.rgb.LinearSrgb;
+import dev.kdrag0n.colorkt.rgb.Srgb;
+import dev.kdrag0n.colorkt.ucs.lab.Oklab;
 import org.javacord.api.entity.permission.Permissions;
 import org.javacord.api.entity.permission.PermissionsBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BotRoleAllocator {
 
@@ -173,17 +177,9 @@ public class BotRoleAllocator {
                     mixes.addAll(second.mix_sources);
                 else
                     mixes.add(second);
-
-                //adds all the mixing colours together
-                int r = 0, g = 0, b = 0;
-                for (var mix : mixes) {
-                    r += mix.getRed() * mix.getRed();
-                    g += mix.getGreen() * mix.getGreen();
-                    b += mix.getBlue() * mix.getBlue();
-                }
-
-                //divides by total colours mixed with
-                var new_color = new ExtColor((int) Math.sqrt(r / mixes.size()), (int) Math.sqrt(g / mixes.size()), (int) Math.sqrt(b / mixes.size()));
+                
+                // mix colours hehe
+                var new_color = mix(mixes);
 
                 //sets the new colour to be mixed
                 new_color.mixed = true;
@@ -255,6 +251,23 @@ public class BotRoleAllocator {
             
             return this;
         }
+        
+        private ExtColor mix(List<ExtColor> colours) {
+            double l = 0, a = 0, b = 0;
+            
+            
+            for (var colour : colours) {
+                var lab = Oklab.fromLinearSrgb(LinearSrgb.fromSrgb(new Srgb(colour.getRGB())));
+                l += lab.getL();
+                a += lab.getA();
+                b += lab.getB();
+            }
+            var colour = Oklab.fromLinearSrgb(LinearSrgb.fromSrgb(new Srgb(0)))
+                    .copy(l / colours.size(), a / colours.size(), b / colours.size())
+                    .toLinearSrgb()
+                    .toSrgb();
+            return new ExtColor(colour.toRgb8());
+        }
 
         private class UserWithColor {
             private User user;
@@ -303,6 +316,9 @@ public class BotRoleAllocator {
 
             public ExtColor(int r, int g, int b) {
                 super(r, g, b);
+            }
+            public ExtColor(int rgb) {
+                super(rgb);
             }
 
             public int[] getSeparateRGB() {

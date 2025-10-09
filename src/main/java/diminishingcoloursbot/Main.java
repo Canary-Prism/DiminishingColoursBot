@@ -1,20 +1,16 @@
 package diminishingcoloursbot;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
+import dev.kdrag0n.colorkt.rgb.LinearSrgb;
+import dev.kdrag0n.colorkt.rgb.Srgb;
+import dev.kdrag0n.colorkt.ucs.lab.Oklab;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,7 +37,52 @@ public class Main {
 
     private BotRoleColorHistory savehistory = null;
     
+    private static void mewo() {
+        var left_colour = new Color(0x00ff00);
+        var right_colour = new Color(0xff77ff);
+        
+        var sections = 400;
+        
+        
+        var left_lab = Oklab.fromLinearSrgb(LinearSrgb.fromSrgb(new Srgb(left_colour.getRGB())));
+        var right_lab = Oklab.fromLinearSrgb(LinearSrgb.fromSrgb(new Srgb(right_colour.getRGB())));
+        
+        var component = new JComponent() {
+            @Override
+            protected void paintComponent(Graphics g1) {
+                super.paintComponent(g1);
+                var g = ((Graphics2D) g1);
+                
+                var width = this.getWidth() / sections;
+                var x = 0;
+                for (int i = 0; i < sections; i++) {
+                    var mix_lab = Oklab.fromLinearSrgb(LinearSrgb.fromSrgb(new Srgb(0))).copy(
+                            (left_lab.getL() * (sections - i) + right_lab.getL() * i) / sections,
+                            (left_lab.getA() * (sections - i) + right_lab.getA() * i) / sections,
+                            (left_lab.getB() * (sections - i) + right_lab.getB() * i) / sections)
+                            .toLinearSrgb()
+                            .toSrgb();
+                    g.setColor(new Color(mix_lab.toRgb8()));
+                    g.fillRect(x, 0, width, 100);
+                    g.setColor(new Color(
+                            (left_colour.getRed() * (sections - i) + right_colour.getRed() * i) / sections,
+                            (left_colour.getGreen() * (sections - i) + right_colour.getGreen() * i) / sections,
+                            (left_colour.getBlue() * (sections - i) + right_colour.getBlue() * i) / sections
+                    ));
+                    g.fillRect(x, 100, width, 100);
+                    x += width;
+                }
+            }
+        };
+        
+        component.setMinimumSize(new Dimension(400, 300));
+        component.setPreferredSize(new Dimension(400, 300));
+        
+        JOptionPane.showMessageDialog(null, component);
+    }
+    
     public static void main(String args[]) {
+//        mewo();
         new Main().load();
     }
     
